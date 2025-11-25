@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\Credential; // Importar el modelo Credential
+use App\Models\User;     // Importar el modelo User
+use Illuminate\Support\Facades\Hash;
 
 class LoginRequest extends FormRequest
 {
@@ -27,7 +30,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -38,19 +41,38 @@ class LoginRequest extends FormRequest
      * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate(): void
-    {
-        $this->ensureIsNotRateLimited();
+{
+    $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+    // 1. Extraer el nombre de usuario de la parte izquierda del email
+    // Si el usuario escribe "nutricionista@cualquiercosa.com", esta línea obtiene "nutricionista"
+    $inputEmail = $this->get('email');
+    $usernameToSearch = explode('@', $inputEmail)[0]; 
 
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
-        }
+    // 2. Buscar las Credenciales usando el username extraído
+    $credential = Credential::where('username', $usernameToSearch)->first();
 
-        RateLimiter::clear($this->throttleKey());
+    // 3. Verificar si se encontró el username Y si el hash de la contraseña es correcto
+    if (!$credential || !Hash::check($this->get('password'), $credential->password)) {
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages([
+            // Usamos 'email' para que el mensaje aparezca bajo el campo de email del formulario
+            'email' => trans('auth.failed'), 
+        ]);
     }
+
+    // 4. Buscar el modelo User asociado e iniciar sesión
+    $user = User::where('credential_id', $credential->id)->first();
+
+    if (!$user) {
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages(['email' => 'Error de mapeo de usuario.']);
+    }
+
+    Auth::login($user, $this->boolean('remember'));
+
+    RateLimiter::clear($this->throttleKey());
+}
 
     /**
      * Ensure the login request is not rate limited.
