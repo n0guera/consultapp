@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,9 +14,22 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            // --- GRUPO 1: CATÁLOGOS (DEBE IR PRIMERO) ---
+            // Provee IDs para Roles, Genders, Statuses
+            CatalogSeeder::class, 
+            
+            // --- GRUPO 2: ENTIDADES BASE ---
+            // Provee IDs para Usuarios y Pacientes (requiere Catálogos)
+            UserSeeder::class,
+            PatientSeeder::class,
+
+            // --- GRUPO 3: DATOS OPERACIONALES (OPCIONALES) ---
+            // Aquí irían seeders para Turnos, Mediciones, etc.
+            // AppointmentSeeder::class,
+            // MeasurementSeeder::class,
         ]);
+
+        
     }
 }
