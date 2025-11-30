@@ -38,9 +38,36 @@ class CatalogSeeder extends Seeder
 
         //3. STATUSES 
         DB::table('statuses')->insert([
-            ['status_name' => 'Agendado', 'description' => 'Turno recién agendado.', 'created_at' => now(), 'updated_at' => now()],
-            ['status_name' => 'Cancelado', 'description' => 'Anulado por consultorio/sistema.', 'created_at' => now(), 'updated_at' => now()],
-            ['status_name' => 'Ausente', 'description' => 'Paciente no asistió.', 'created_at' => now(), 'updated_at' => now()],
+            [
+                'status_name' => 'Agendado',
+                'description' => 'Turno reservado, pendiente de confirmación.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'status_name' => 'Confirmado',
+                'description' => 'Paciente confirmó asistencia.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'status_name' => 'Atendido',
+                'description' => 'Consulta realizada con éxito.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'status_name' => 'Cancelado',
+                'description' => 'Anulado por paciente o profesional.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'status_name' => 'Ausente',
+                'description' => 'El paciente no se presentó (No-Show).',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
         ]);
     }
 }

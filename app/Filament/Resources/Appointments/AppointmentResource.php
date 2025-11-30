@@ -163,11 +163,13 @@ class AppointmentResource extends Resource
                 Tables\Columns\TextColumn::make('status.status_name')
                     ->label('Estado')
                     ->badge()
-                    ->color(fn($state): string => match ($state) {
-                        'Agendado' => 'warning',   // Amarillo
-                        'Cancelado' => 'danger',   // Rojo
-                        'Ausente' => 'gray',      // Gris
-                        default => 'gray',
+                    ->color(fn(string $state): string => match ($state) {
+                        'Agendado'   => 'gray',    // Gris: Está en espera
+                        'Confirmado' => 'info',    // Azul: Todo listo, seguro viene
+                        'Atendido'   => 'success', // Verde: Dinero ingresado / Trabajo hecho
+                        'Cancelado'  => 'danger',  // Rojo: Perdido
+                        'Ausente'    => 'warning', // Naranja/Amarillo: Ojo con este paciente
+                        default      => 'gray',
                     }),
             ])
             ->defaultSort('start_date', 'desc')

@@ -31,11 +31,12 @@ class AppointmentCalendarWidget extends FullCalendarWidget
                     'end'   => $event->end_date,
                     // Lógica de colores según el nombre del estado en tu DB
                     'color' => match ($event->status?->status_name) {
-                        'Agendado'   => '#eab308', // Amarillo
-                        'Confirmado' => '#22c55e', // Verde
-                        'Cancelado'  => '#ef4444', // Rojo
-                        'Atendido'   => '#6b7280', // Gris
-                        default      => '#3b82f6', // Azul (Default)
+                        'Agendado'   => '#6b7280', // Gris: Está reservado pero frío
+                        'Confirmado' => '#3b82f6', // Azul: Confirmado, listo para suceder
+                        'Atendido'   => '#22c55e', // Verde: ÉXITO, consulta finalizada
+                        'Cancelado'  => '#ef4444', // Rojo: Cancelado
+                        'Ausente'    => '#f59e0b', // Naranja/Ambar: Ojo, faltó
+                        default      => '#3b82f6',
                     },
                 ]
             )
