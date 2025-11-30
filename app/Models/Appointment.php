@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Appointment extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'patient_id',
         'user_id',
@@ -23,51 +22,51 @@ class Appointment extends Model
     ];
 
     protected $casts = [
-        'send_reminder' => 'boolean',
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
-    ];
+    'send_reminder' => 'boolean',
+    'start_date' => 'datetime',
+    'end_date' => 'datetime',
+];
 
-    // Relaciones
-    public function patient(): BelongsTo
-    {
-        return $this->belongsTo(Patient::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function status(): BelongsTo
-    {
-        return $this->belongsTo(Status::class);
-    }
-
-    public function clinicalNote(): HasOne
-    {
-        return $this->hasOne(ClinicalNote::class);
-    }
-
-    public function measurement(): BelongsTo
-    {
-        return $this->belongsTo(Measurement::class);
-    }
-
-    // Scopes
-    public function scopeUpcoming($query)
-    {
-        return $query->where('start_date', '>=', now())
-                    ->orderBy('start_date');
-    }
-
-    public function scopeToday($query)
-    {
-        return $query->whereDate('start_date', today());
-    }
-
-    public function scopeByStatus($query, $statusId)
-    {
-        return $query->where('status_id', $statusId);
-    }
+// Relaciones
+public function patient(): BelongsTo
+{
+    return $this->belongsTo(Patient::class, 'patient_id');
 }
+
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
+public function status(): BelongsTo
+{
+    return $this->belongsTo(Status::class, 'status_id');
+}
+
+public function clinicalNote(): HasOne
+{
+    return $this->hasOne(ClinicalNote::class, 'appointment_id');
+}
+
+public function measurement(): BelongsTo
+{
+    return $this->belongsTo(Measurement::class);
+}
+
+// Scopes
+public function scopeUpcoming($query)
+{
+    return $query->where('start_date', '>=', now())
+                ->orderBy('start_date');
+}
+
+public function scopeToday($query)
+{
+    return $query->whereDate('start_date', today());
+}
+
+public function scopeByStatus($query, $statusId)
+{
+    return $query->where('status_id', $statusId);
+}
+    }

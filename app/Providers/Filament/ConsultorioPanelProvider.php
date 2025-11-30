@@ -18,13 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\Pages\Auth\Login;
-use Filament\Forms\Form;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Checkbox;
-use Filament\Actions\Action;
-use Illuminate\Support\Facades\Auth;
-use Filament\Pages;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
 
 class ConsultorioPanelProvider extends PanelProvider
@@ -36,10 +30,14 @@ class ConsultorioPanelProvider extends PanelProvider
             ->id('consultorio')
             ->path('consultorio')
             ->login()
-    
+            ->spa()
+
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->plugin(
+                FilamentFullCalendarPlugin::make()
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

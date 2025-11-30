@@ -18,13 +18,13 @@ class CatalogSeeder extends Seeder
             [
                 'name' => 'Nutricionista',
                 'description' => 'Acceso total a la gestión clínica y dashboard.',
-                'created_at' => now(), 
+                'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'name' => 'Secretaria',
                 'description' => 'Acceso limitado a agenda y datos administrativos de pacientes.',
-                'created_at' => now(), 
+                'created_at' => now(),
                 'updated_at' => now()
             ],
         ]);
@@ -34,12 +34,11 @@ class CatalogSeeder extends Seeder
             ['name' => 'Femenino', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Masculino', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Otro', 'created_at' => now(), 'updated_at' => now()],
-        ]); 
+        ]);
 
         //3. STATUSES 
         DB::table('statuses')->insert([
-            ['status_name' => 'Pendiente', 'description' => 'Turno recién agendado.', 'created_at' => now(), 'updated_at' => now()],
-            ['status_name' => 'Completado', 'description' => 'Consulta realizada.', 'created_at' => now(), 'updated_at' => now()],
+            ['status_name' => 'Agendado', 'description' => 'Turno recién agendado.', 'created_at' => now(), 'updated_at' => now()],
             ['status_name' => 'Cancelado', 'description' => 'Anulado por consultorio/sistema.', 'created_at' => now(), 'updated_at' => now()],
             ['status_name' => 'Ausente', 'description' => 'Paciente no asistió.', 'created_at' => now(), 'updated_at' => now()],
         ]);

@@ -16,8 +16,9 @@ class ListPatients extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('+ Nuevo Paciente')
-                ->color('success'),
+                ->label('Nuevo Paciente')
+                ->icon('heroicon-o-plus')
+                ->color('success')
         ];
     }
 }
