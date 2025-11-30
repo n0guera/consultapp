@@ -163,7 +163,6 @@ class AppointmentResource extends Resource
                 Tables\Columns\TextColumn::make('status.status_name')
                     ->label('Estado')
                     ->badge()
-                    //->placeholder('Sin asignar')
                     ->color(fn($state): string => match ($state) {
                         'Agendado' => 'warning',   // Amarillo
                         'Cancelado' => 'danger',   // Rojo

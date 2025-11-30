@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Appointments\Pages;
 
 use App\Filament\Resources\Appointments\AppointmentResource;
 use Filament\Resources\Pages\CreateRecord;
-use Filament\Support\Enums\MaxWidth;
 
 class CreateAppointment extends CreateRecord
 {

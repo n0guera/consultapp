@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Appointments\Pages; // Asegúrate que este namespace coincida con tu carpeta real
 
 use App\Filament\Resources\Appointments\AppointmentResource; // Asegúrate que la ruta al Resource sea correcta
-use App\Filament\Widgets\AppointmentCalendarWidget; // Importamos tu Widget
+use App\Filament\Resources\Appointments\Widgets\AppointmentCalendarWidget; // Importamos tu Widget
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Table;
 use Filament\Actions;
