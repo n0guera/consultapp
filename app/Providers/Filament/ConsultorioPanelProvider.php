@@ -19,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
+use Illuminate\Support\HtmlString;
 
 
 class ConsultorioPanelProvider extends PanelProvider
@@ -30,10 +31,27 @@ class ConsultorioPanelProvider extends PanelProvider
             ->id('consultorio')
             ->path('consultorio')
             ->login()
+            ->brandName('ConsultApp')
+            ->brandLogo(fn() => new HtmlString('
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img 
+                    src="' . asset('images/logo.png') . '" 
+                    alt="Logo ConsultApp" 
+                    style="height: 40px; width: auto;" 
+                />
+                
+                <span style="font-size: 30px; font-weight: bold; color: inherit; line-height: 1;">
+                    ConsultApp
+                </span>
+            </div>
+        '))
+
+            // Ajusta la altura automática para que no corte tu nuevo diseño
+            ->brandLogoHeight('5rem')
             ->spa()
 
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Green,
             ])
             ->plugin(
                 FilamentFullCalendarPlugin::make()
