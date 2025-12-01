@@ -46,7 +46,17 @@ class PatientResource extends Resource
                         Forms\Components\TextInput::make('dni')
                             ->label('DNI')
                             ->required()
-                            ->unique(table: 'personal_data', ignoreRecord: true)
+                            ->unique(table: 'personal_data', 
+                            column: 'dni',
+                            modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $record) {
+                                // Si hay un registro (estamos editando) y tiene ID de datos personales...
+                                if ($record && $record->personal_data_id) {
+                                    // ...le decimos a la regla Unique que ignore ESE ID específico
+                                    return $rule->ignore($record->personal_data_id);
+                                }
+                                return $rule;
+                            }
+                            )
                             ->maxLength(20),
 
                         Forms\Components\DatePicker::make('birth_date')
