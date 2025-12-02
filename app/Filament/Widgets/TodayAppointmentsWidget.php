@@ -7,14 +7,15 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use App\Filament\Resources\Appointments\AppointmentResource;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class TodayAppointmentsWidget extends BaseWidget
 {
     // Orden 1 para que salga arriba de todo
-    protected static ?int $sort = 1; 
-    
+    protected static ?int $sort = 1;
+
     // Ocupar todo el ancho disponible
-    protected int | string | array $columnSpan = 'full'; 
+    protected int | string | array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
@@ -44,7 +45,7 @@ class TodayAppointmentsWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('status.status_name')
                     ->label('Estado')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Confirmado' => 'info',
                         'Atendido'   => 'success',
                         'Cancelado'  => 'danger',
@@ -56,9 +57,9 @@ class TodayAppointmentsWidget extends BaseWidget
                 // Botón discreto para gestionar el turno
                 \Filament\Actions\Action::make('gestionar')
                     ->label('Ver')
-                    ->icon('heroicon-m-pencil-square')
+                    ->icon(LucideIcon::SquarePen)
                     ->color('gray')
-                    ->url(fn (Appointment $record) => AppointmentResource::getUrl('edit', ['record' => $record])),
+                    ->url(fn(Appointment $record) => AppointmentResource::getUrl('edit', ['record' => $record])),
             ])
             ->paginated(false); // Lista compacta sin páginas
     }

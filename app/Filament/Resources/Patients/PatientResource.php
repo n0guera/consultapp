@@ -6,6 +6,7 @@ use App\Filament\Resources\Patients\Pages;
 use App\Models\Patient;
 use App\Models\Gender;
 use BackedEnum;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
@@ -17,7 +18,7 @@ class PatientResource extends Resource
 {
     protected static ?string $model = Patient::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = LucideIcon::Users;
 
     protected static ?string $navigationLabel = 'Pacientes';
 
@@ -46,16 +47,17 @@ class PatientResource extends Resource
                         Forms\Components\TextInput::make('dni')
                             ->label('DNI')
                             ->required()
-                            ->unique(table: 'personal_data', 
-                            column: 'dni',
-                            modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $record) {
-                                // Si hay un registro (estamos editando) y tiene ID de datos personales...
-                                if ($record && $record->personal_data_id) {
-                                    // ...le decimos a la regla Unique que ignore ESE ID específico
-                                    return $rule->ignore($record->personal_data_id);
+                            ->unique(
+                                table: 'personal_data',
+                                column: 'dni',
+                                modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $record) {
+                                    // Si hay un registro (estamos editando) y tiene ID de datos personales...
+                                    if ($record && $record->personal_data_id) {
+                                        // ...le decimos a la regla Unique que ignore ESE ID específico
+                                        return $rule->ignore($record->personal_data_id);
+                                    }
+                                    return $rule;
                                 }
-                                return $rule;
-                            }
                             )
                             ->maxLength(20),
 
@@ -165,7 +167,7 @@ class PatientResource extends Resource
             ->recordActions([
                 \Filament\Actions\Action::make('view')
                     ->label('Ver Ficha')
-                    ->icon('heroicon-o-eye')
+                    ->icon(LucideIcon::Eye)
                     ->url(fn(Patient $record): string => PatientResource::getUrl('edit', ['record' => $record]))
                     ->button()
                     ->color('gray'),
@@ -177,7 +179,7 @@ class PatientResource extends Resource
             ->searchPlaceholder('Buscar por nombre, apellido, email o Teléfono...')
             ->emptyStateHeading('No hay pacientes registrados')
             ->emptyStateDescription('Crea un nuevo paciente para comenzar.')
-            ->emptyStateIcon('heroicon-o-user-group');
+            ->emptyStateIcon(LucideIcon::Users);
     }
 
 
