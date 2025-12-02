@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use App\Filament\Resources\Appointments\AppointmentResource;
 use Illuminate\Support\Facades\Auth;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class Dashboard extends BaseDashboard
 {
@@ -22,13 +23,13 @@ class Dashboard extends BaseDashboard
         return [
             Action::make('agendar')
                 ->label('Agendar Nuevo Turno')
-                ->icon('heroicon-o-plus')
+                ->icon(LucideIcon::CalendarPlus)
                 ->color('primary')
                 ->url(AppointmentResource::getUrl('create')), // Te lleva a crear turno
 
             Action::make('agenda_completa')
                 ->label('Ver Agenda Completa')
-                ->icon('heroicon-o-calendar')
+                ->icon(LucideIcon::Calendar)
                 ->color('gray')
                 ->url(AppointmentResource::getUrl('index')), // Te lleva al listado
         ];

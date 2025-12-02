@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Patients\Pages;
 use App\Filament\Resources\Patients\PatientResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class EditPatient extends EditRecord
 {
@@ -16,14 +17,15 @@ class EditPatient extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-                ->label('Eliminar Paciente'),
+                ->label('Eliminar Paciente')
+                ->icon(LucideIcon::UserMinus)
         ];
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $patient = $this->record;
-        
+
         return [
             'first_name' => $patient->personalData->first_name,
             'last_name' => $patient->personalData->last_name,
