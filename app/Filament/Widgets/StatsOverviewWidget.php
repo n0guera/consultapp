@@ -9,27 +9,44 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverviewWidget extends BaseWidget
 {
-    // Esto ordena el widget en la pantalla (ponemos 2 para que salga después de la tabla de hoy)
     protected static ?int $sort = 2; 
 
     protected function getStats(): array
     {
+        // 1. Calcular el Total de turnos de este mes
+        $totalAppointments = Appointment::query()
+            ->whereMonth('start_date', now()->month)
+            ->whereYear('start_date', now()->year)
+            ->count();
+
+        // 2. Calcular los Ausentes de este mes
+        $absentAppointments = Appointment::query()
+            ->whereMonth('start_date', now()->month)
+            ->whereYear('start_date', now()->year)
+            // Filtramos usando la relación: estado cuyo nombre sea 'Ausente'
+            ->whereHas('status', fn ($query) => $query->where('status_name', 'Ausente'))
+            ->count();
+
+        // 3. Calcular porcentaje (protegido contra división por cero)
+        $absenceRate = $totalAppointments > 0 
+            ? round(($absentAppointments / $totalAppointments) * 100) 
+            : 0;
+            
         return [
             Stat::make('Pacientes Activos', Patient::where('active', true)->count())
                 ->description('Total registrados')
                 ->icon('heroicon-o-users')
                 ->color('success'),
 
-            Stat::make('Turnos este Mes', Appointment::whereMonth('start_date', now()->month)->count())
+            Stat::make('Turnos este Mes', $totalAppointments)
                 ->description('Agendados en ' . now()->monthName)
                 ->icon('heroicon-o-calendar')
-                ->chart([7, 2, 10, 3, 15, 4, 17]) // Gráfico decorativo
                 ->color('info'),
 
-            Stat::make('Tasa de Ausencia', '15%') // Dato simulado por ahora
+                Stat::make('Tasa de Ausencia', $absenceRate . '%')
                 ->description('Promedio mensual')
                 ->icon('heroicon-o-exclamation-triangle')
-                ->color('danger'),
+                ->color($absenceRate > 15 ? 'danger' : 'success'),
         ];
     }
 }
