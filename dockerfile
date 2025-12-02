@@ -1,7 +1,7 @@
 # 1. Imagen Base
 # Usamos una imagen de PHP FPM (FastCGI Process Manager) para servir la aplicación.
 # Sustituye 8.3 con tu versión de PHP, por ejemplo: 8.2-fpm.
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # 2. Instalar dependencias del sistema y extensiones de PHP
 # alpine/edge incluye paquetes más recientes.
