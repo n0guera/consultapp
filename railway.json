@@ -8,5 +8,4 @@
     "healthcheckPath": "/",
     "healthcheckPathTimeout": 300
   }
-  
 }
