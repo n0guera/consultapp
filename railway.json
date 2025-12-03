@@ -4,7 +4,7 @@
     "dockerfile": "dockerfile"
   },
   "deploy": {
-    "startCommand": "sh -c \"php-fpm && nginx -g 'daemon off;'\"",
+    "startCommand": "sh -c \"php-fpm -F & /usr/sbin/nginx -g 'daemon off;'\"",
     "healthcheckPath": "/",
     "healthcheckPathTimeout": 300
   }
