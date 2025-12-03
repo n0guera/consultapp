@@ -40,11 +40,6 @@ class Measurement extends Model
         return $this->belongsTo(Appointment::class);
     }
 
-    public function appointments(): HasMany
-    {
-        return $this->hasMany(Appointment::class);
-    }
-
     // Calcular BMI automáticamente
     protected static function boot()
     {

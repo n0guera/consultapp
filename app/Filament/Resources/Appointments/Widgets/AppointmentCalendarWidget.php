@@ -7,10 +7,13 @@ use App\Models\Appointment;
 use App\Filament\Resources\Appointments\AppointmentResource;
 use Saade\FilamentFullCalendar\Actions; // Acciones del plugin
 use Illuminate\Database\Eloquent\Model;
+use Filament\Schemas\Schema;
+use Filament\Actions\Action; 
+use Filament\Actions\DeleteAction;
 
 class AppointmentCalendarWidget extends FullCalendarWidget
 {
-    public Model | string | null $model = Appointment::class;
+    public Model|string|null $model = Appointment::class;
 
     /**
      * 1. Cargar Eventos de la Base de Datos
@@ -24,19 +27,19 @@ class AppointmentCalendarWidget extends FullCalendarWidget
             ->get()
             ->map(
                 fn(Appointment $event) => [
-                    'id'    => $event->id,
+                    'id' => $event->id,
                     // Usamos el Accesor full_name. Si es null, mostramos texto de respaldo
                     'title' => $event->patient?->full_name ?? 'Sin Paciente',
                     'start' => $event->start_date,
-                    'end'   => $event->end_date,
+                    'end' => $event->end_date,
                     // Lógica de colores según el nombre del estado en tu DB
                     'color' => match ($event->status?->status_name) {
-                        'Agendado'   => '#6b7280', // Gris: Está reservado pero frío
+                        'Agendado' => '#6b7280', // Gris: Está reservado pero frío
                         'Confirmado' => '#3b82f6', // Azul: Confirmado, listo para suceder
-                        'Atendido'   => '#22c55e', // Verde: ÉXITO, consulta finalizada
-                        'Cancelado'  => '#ef4444', // Rojo: Cancelado
-                        'Ausente'    => '#f59e0b', // Naranja/Ambar: Ojo, faltó
-                        default      => '#3b82f6',
+                        'Atendido' => '#22c55e', // Verde: ÉXITO, consulta finalizada
+                        'Cancelado' => '#ef4444', // Rojo: Cancelado
+                        'Ausente' => '#f59e0b', // Naranja/Ambar: Ojo, faltó
+                        default => '#3b82f6',
                     },
                 ]
             )
@@ -53,10 +56,33 @@ class AppointmentCalendarWidget extends FullCalendarWidget
      * 2. Definir el Formulario del Modal (Overlay)
      * ¡Reutilizamos el del Recurso para no escribirlo dos veces!
      */
-    public function getFormSchema(): array
+    public function getSchema(string $name): Schema|null
     {
-        return AppointmentResource::getFormComponents();
+        // Obtenemos la estructura base y le inyectamos tu formulario
+        $schema = parent::getSchema($name);
+
+        if ($schema) {
+            return AppointmentResource::form($schema)
+                ->model($this->getModel()); // Importante para rellenar datos al editar
+        }
+
+        return null;
     }
+    public function onEventClick(array $info): void
+    {
+        $id = $info['event']['id'] ?? $info['id'] ?? null;
+
+        if ($id) {
+            $id = $info['event']['id'] ?? $info['id'] ?? null;
+
+        if ($id) {
+            // Pasamos el ID en un array de argumentos con nombre 'record_id'
+            $this->mountAction('edit', ['record_id' => $id]);
+        }
+    }
+    }
+
+    
 
     /**
      * 3. Configurar Acciones (Botones)
@@ -70,12 +96,55 @@ class AppointmentCalendarWidget extends FullCalendarWidget
     protected function modalActions(): array
     {
         return [
-            \Filament\Actions\EditAction::make()
+            // 1. ACCIÓN DE EDITAR (MANUAL Y ROBUSTA)
+            Action::make('edit')
+                ->label('Guardar Cambios')
                 ->modalHeading('Editar Turno')
-                ->modalWidth('5xl'),
+                ->modalWidth('5xl')
+                // Conectamos tu formulario de 2 columnas
+                ->form(fn (Schema $schema) => AppointmentResource::form($schema))
+                
+                // A. Cargar datos al abrir el modal
+                ->mountUsing(function ($form, array $arguments) {
+                    // Buscamos el turno usando el ID que pasamos en onEventClick
+                    $appointment = Appointment::find($arguments['record_id']);
+                    
+                    if ($appointment) {
+                        $form->fill($appointment->toArray());
+                    }
+                })
+                
+                // B. Guardar datos al confirmar
+                ->action(function (array $data, array $arguments) {
+                    $appointment = Appointment::find($arguments['record_id']);
+                    
+                    if ($appointment) {
+                        $appointment->update($data);
+                        
+                        \Filament\Notifications\Notification::make()
+                            ->title('Turno actualizado')
+                            ->success()
+                            ->send();
+                    }
+                }),
 
-            \Filament\Actions\DeleteAction::make()
-                ->modalHeading('Eliminar Turno'),
+            // 2. ACCIÓN DE ELIMINAR (MANUAL PARA EVITAR ERRORES TAMBIÉN)
+            Action::make('delete')
+                ->label('Eliminar')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Eliminar Turno')
+                ->action(function (array $arguments) {
+                    $appointment = Appointment::find($arguments['record_id']);
+                    if ($appointment) {
+                        $appointment->delete();
+                        
+                        \Filament\Notifications\Notification::make()
+                            ->title('Turno eliminado')
+                            ->danger()
+                            ->send();
+                    }
+                }),
         ];
     }
 

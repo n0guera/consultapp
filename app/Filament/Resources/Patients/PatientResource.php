@@ -12,6 +12,10 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Forms\Components\Placeholder;
+use Illuminate\Support\HtmlString;
 
 class PatientResource extends Resource
 {
@@ -46,16 +50,17 @@ class PatientResource extends Resource
                         Forms\Components\TextInput::make('dni')
                             ->label('DNI')
                             ->required()
-                            ->unique(table: 'personal_data', 
-                            column: 'dni',
-                            modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $record) {
-                                // Si hay un registro (estamos editando) y tiene ID de datos personales...
-                                if ($record && $record->personal_data_id) {
-                                    // ...le decimos a la regla Unique que ignore ESE ID específico
-                                    return $rule->ignore($record->personal_data_id);
+                            ->unique(
+                                table: 'personal_data',
+                                column: 'dni',
+                                modifyRuleUsing: function (\Illuminate\Validation\Rules\Unique $rule, $record) {
+                                    // Si hay un registro (estamos editando) y tiene ID de datos personales...
+                                    if ($record && $record->personal_data_id) {
+                                        // ...le decimos a la regla Unique que ignore ESE ID específico
+                                        return $rule->ignore($record->personal_data_id);
+                                    }
+                                    return $rule;
                                 }
-                                return $rule;
-                            }
                             )
                             ->maxLength(20),
 
@@ -163,12 +168,13 @@ class PatientResource extends Resource
                     ->default('1'),
             ])
             ->recordActions([
-                \Filament\Actions\Action::make('view')
+                \Filament\Actions\ViewAction::make()
                     ->label('Ver Ficha')
                     ->icon('heroicon-o-eye')
-                    ->url(fn(Patient $record): string => PatientResource::getUrl('edit', ['record' => $record]))
                     ->button()
                     ->color('gray'),
+
+                \Filament\Actions\EditAction::make(),
             ])
             ->groupedBulkActions([
                 \Filament\Actions\DeleteBulkAction::make(),
@@ -180,11 +186,72 @@ class PatientResource extends Resource
             ->emptyStateIcon('heroicon-o-user-group');
     }
 
+    public static function infolist(Schema $schema): Schema
+{
+    return $schema
+        ->components([
+            // Usamos una Sección que ocupe TODO el ancho
+            Section::make('Ficha del Paciente')
+                ->icon('heroicon-o-identification')
+                ->schema([
+                    // Nivel 1: Encabezado (Foto/Nombre y Estado)
+                    Grid::make(4)->schema([
+                        Group::make([
+                            Placeholder::make('full_name')
+                                ->hiddenLabel()
+                                ->content(fn (Patient $record) => new HtmlString(
+                                    "<div class='flex items-center gap-4'>
+                                        <div class='h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold text-gray-500'>
+                                            " . substr($record->first_name, 0, 1) . substr($record->last_name, 0, 1) . "
+                                        </div>
+                                        <div>
+                                            <h2 class='text-2xl font-bold'>{$record->full_name}</h2>
+                                            <p class='text-sm text-gray-500'>Paciente registrado hace {$record->created_at->diffForHumans()}</p>
+                                        </div>
+                                    </div>"
+                                )),
+                        ])->columnSpan(3), // Ocupa 3/4 del ancho
+
+                        Placeholder::make('active')
+                            ->hiddenLabel()
+                            ->content(fn (Patient $record) => new HtmlString(
+                                $record->active 
+                                    ? '<div class="flex justify-end"><span class="px-3 py-1 rounded-full bg-green-50 text-green-700 text-sm font-bold border border-green-200">● Activo</span></div>'
+                                    : '<div class="flex justify-end"><span class="px-3 py-1 rounded-full bg-gray-50 text-gray-600 text-sm font-bold border border-gray-200">○ Inactivo</span></div>'
+                            ))->columnSpan(1), // Ocupa 1/4 (a la derecha)
+                    ]),
+
+                    // Separador visual
+                    Group::make()->schema([])->extraAttributes(['class' => 'border-t border-gray-100 my-4']),
+
+                    // Nivel 2: Datos en 3 columnas (aprovechando el ancho)
+                    Grid::make(3)->schema([
+                        Placeholder::make('phone')
+                            ->label('Teléfono')
+                            ->icon('heroicon-m-phone')
+                            ->content(fn ($record) => $record->phone ?? '-'),
+
+                        Placeholder::make('email')
+                            ->label('Email')
+                            ->icon('heroicon-m-envelope')
+                            ->content(fn ($record) => $record->email ?? '-'),
+
+                        Placeholder::make('personalData.birth_date')
+                            ->label('Fecha de Nacimiento')
+                            ->icon('heroicon-m-calendar')
+                            ->content(fn ($record) => $record->personalData?->birth_date?->format('d/m/Y') . ' (' . $record->personalData?->birth_date?->age . ' años)' ?? '-'),
+                    ]),
+                    
+                ])
+                ->columnSpanFull()
+        ]);
+}
+
 
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AppointmentsRelationManager::class,
         ];
     }
 
@@ -194,6 +261,7 @@ class PatientResource extends Resource
             'index' => Pages\ListPatients::route('/'),
             'create' => Pages\CreatePatient::route('/create'),
             'edit' => Pages\EditPatient::route('/{record}/edit'),
+            'view' => Pages\ViewPatient::route('/{record}')
         ];
     }
 

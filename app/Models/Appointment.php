@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Measurement;
 
 class Appointment extends Model
 {
@@ -48,10 +49,10 @@ public function clinicalNote(): HasOne
     return $this->hasOne(ClinicalNote::class, 'appointment_id');
 }
 
-public function measurement(): BelongsTo
-{
-    return $this->belongsTo(Measurement::class);
-}
+public function measurement(): HasOne
+    {
+        return $this->hasOne(Measurement::class);
+    }
 
 // Scopes
 public function scopeUpcoming($query)
