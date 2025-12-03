@@ -30,7 +30,7 @@ class AppointmentResource extends Resource
 {
     protected static ?string $model = Appointment::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = LucideIcon::CalendarDays;
+    protected static string|\BackedEnum|null $navigationIcon = LucideIcon::CalendarDays;
     protected static ?string $navigationLabel = 'Agenda / Turnos';
     protected static ?string $modelLabel = 'Turno';
     protected static ?string $pluralModelLabel = 'Turnos';
@@ -47,25 +47,22 @@ class AppointmentResource extends Resource
                     ->components([
 
                         Select::make('patient_id')
-                            ->label('Paciente')
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->getSearchResultsUsing(
-                                fn(string $search): array => \App\Models\Patient::query()
-                                    ->whereHas('personalData', function ($query) use ($search) {
-                                        $query->where('first_name', 'like', "%{$search}%")
-                                            ->orWhere('last_name', 'like', "%{$search}%")
-                                            ->orWhere('dni', 'like', "%{$search}%");
-                                    })
-                                    ->limit(50)
-                                    ->get()
-                                    ->mapWithKeys(fn($patient) => [$patient->id => $patient->full_name])
-                                    ->toArray()
-                            )
-                            ->getOptionLabelUsing(fn($value) => \App\Models\Patient::find($value)?->full_name)
-                            ->exists(table: 'patients', column: 'id')
-                            ->columnSpanFull(),
+    ->label('Paciente')
+    ->required()
+    
+    // 1. RELACIÓN: Conecta con el modelo Patient y precarga personalData
+    ->relationship('patient', modifyQueryUsing: fn ($query) => $query->with('personalData'))
+    
+    // 2. ETIQUETA: Usa tu accessor 'full_name' para que se vea bonito
+    ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
+    
+    // 3. BÚSQUEDA: Habilitamos búsqueda por columnas de la relación (dot notation)
+    ->searchable(['personalData.first_name', 'personalData.last_name', 'personalData.dni'])
+    
+    // 4. PRELOAD: ¡La clave! Carga los primeros 50 registros apenas abres el select
+    ->preload()
+    
+    ->columnSpanFull(),
 
                         Grid::make(2)->schema([
                             Select::make('reason')
@@ -140,6 +137,7 @@ class AppointmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn($query) => $query->with(['patient', 'status', 'user']))
             ->columns([
                 Tables\Columns\TextColumn::make('patient_full_name') // Nombre arbitrario
                     ->label('Paciente')
@@ -165,12 +163,12 @@ class AppointmentResource extends Resource
                     ->label('Estado')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
-                        'Agendado'   => 'gray',    // Gris: Está en espera
+                        'Agendado' => 'gray',    // Gris: Está en espera
                         'Confirmado' => 'info',    // Azul: Todo listo, seguro viene
-                        'Atendido'   => 'success', // Verde: Dinero ingresado / Trabajo hecho
-                        'Cancelado'  => 'danger',  // Rojo: Perdido
-                        'Ausente'    => 'warning', // Naranja/Amarillo: Ojo con este paciente
-                        default      => 'gray',
+                        'Atendido' => 'success', // Verde: Dinero ingresado / Trabajo hecho
+                        'Cancelado' => 'danger',  // Rojo: Perdido
+                        'Ausente' => 'warning', // Naranja/Amarillo: Ojo con este paciente
+                        default => 'gray',
                     }),
             ])
             ->defaultSort('start_date', 'desc')

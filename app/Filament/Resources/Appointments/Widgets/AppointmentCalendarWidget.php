@@ -13,6 +13,7 @@ use Filament\Actions\DeleteAction;
 
 class AppointmentCalendarWidget extends FullCalendarWidget
 {
+    protected static bool $isLazy = true;
     public Model|string|null $model = Appointment::class;
 
     /**

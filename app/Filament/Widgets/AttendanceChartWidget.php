@@ -10,6 +10,7 @@ use Flowframe\Trend\TrendValue;
 
 class AttendanceChartWidget extends ChartWidget
 {
+    protected static bool $isLazy = true;
     protected ?string $heading = 'Asistencia Semanal';
     
     // Orden 3 para que aparezca después de la tabla y al lado de las métricas

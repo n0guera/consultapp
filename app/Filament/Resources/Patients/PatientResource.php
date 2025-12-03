@@ -112,6 +112,7 @@ class PatientResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with(['personalData', 'gender']))
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')
                     ->label('Nombre Completo')
@@ -172,7 +173,7 @@ class PatientResource extends Resource
                 \Filament\Actions\ViewAction::make()
                     ->label('Ver Ficha')
                     ->icon(LucideIcon::Eye)
-                    ->url(fn(Patient $record): string => PatientResource::getUrl('edit', ['record' => $record]))
+                    ->url(fn(Patient $record): string => PatientResource::getUrl('view', ['record' => $record]))
                     ->button()
                     ->color('gray'),
 

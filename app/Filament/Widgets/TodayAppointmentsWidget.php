@@ -11,6 +11,7 @@ use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class TodayAppointmentsWidget extends BaseWidget
 {
+    protected static bool $isLazy = true;
     // Orden 1 para que salga arriba de todo
     protected static ?int $sort = 1;
 

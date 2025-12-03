@@ -38,6 +38,11 @@ class Patient extends Model
         return $this->hasMany(Measurement::class);
     }
 
+    public function gender(): BelongsTo
+    {
+        return $this->belongsTo(Gender::class);
+    }
+
     // ==================== ACCESSORS ====================
     
     public function fullName(): Attribute
