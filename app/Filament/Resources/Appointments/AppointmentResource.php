@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Appointments;
 
 use App\Filament\Resources\Appointments\Pages;
 use App\Models\Appointment;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
@@ -29,7 +30,7 @@ class AppointmentResource extends Resource
 {
     protected static ?string $model = Appointment::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string | \BackedEnum | null $navigationIcon = LucideIcon::CalendarDays;
     protected static ?string $navigationLabel = 'Agenda / Turnos';
     protected static ?string $modelLabel = 'Turno';
     protected static ?string $pluralModelLabel = 'Turnos';

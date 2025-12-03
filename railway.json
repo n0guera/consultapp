@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.railway.app/schemas/railway.schema.json",
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "docker build -t railway-app .",
+    "dockerfile": "Dockerfile"
+  },
+  "deploy": {
+    "startCommand": "sh -c \"php-fpm && nginx -g 'daemon off;'\"",
+    "healthcheckPath": "/",
+    "port": 8000,
+    "restartPolicy": {
+      "maxRetries": 3
+    }
+  },
+  "environment": {
+    "APP_ENV": "production",
+    "APP_DEBUG": "false",
+    "APP_URL": "https://${RAILWAY_STATIC_URL}",
+    "LOG_CHANNEL": "stderr",
+    "DB_CONNECTION": "mysql",
+    "DB_HOST": "${MYSQL_HOST}",
+    "DB_PORT": "${MYSQL_PORT}",
+    "DB_DATABASE": "${MYSQL_DATABASE}",
+    "DB_USERNAME": "${MYSQL_USERNAME}",
+    "DB_PASSWORD": "${MYSQL_PASSWORD}"
+  }
+}

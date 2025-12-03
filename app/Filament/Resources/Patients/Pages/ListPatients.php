@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Patients\Pages;
 use App\Filament\Resources\Patients\PatientResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class ListPatients extends ListRecords
 {
@@ -17,7 +18,7 @@ class ListPatients extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->label('Nuevo Paciente')
-                ->icon('heroicon-o-plus')
+                ->icon(LucideIcon::Plus)
                 ->color('success')
         ];
     }

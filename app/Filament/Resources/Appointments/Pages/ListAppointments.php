@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Appointments\Pages; // Asegúrate que este name
 
 use App\Filament\Resources\Appointments\AppointmentResource; // Asegúrate que la ruta al Resource sea correcta
 use App\Filament\Resources\Appointments\Widgets\AppointmentCalendarWidget; // Importamos tu Widget
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Table;
 use Filament\Actions;
@@ -17,7 +18,7 @@ class ListAppointments extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->label('Nuevo Turno')
-                ->icon('heroicon-o-plus')
+                ->icon(LucideIcon::CalendarPlus)
                 ->color('success')
 
         ];

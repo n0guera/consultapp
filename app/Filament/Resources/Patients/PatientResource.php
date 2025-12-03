@@ -6,6 +6,7 @@ use App\Filament\Resources\Patients\Pages;
 use App\Models\Patient;
 use App\Models\Gender;
 use BackedEnum;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
@@ -21,7 +22,7 @@ class PatientResource extends Resource
 {
     protected static ?string $model = Patient::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = LucideIcon::Users;
 
     protected static ?string $navigationLabel = 'Pacientes';
 
@@ -170,7 +171,8 @@ class PatientResource extends Resource
             ->recordActions([
                 \Filament\Actions\ViewAction::make()
                     ->label('Ver Ficha')
-                    ->icon('heroicon-o-eye')
+                    ->icon(LucideIcon::Eye)
+                    ->url(fn(Patient $record): string => PatientResource::getUrl('edit', ['record' => $record]))
                     ->button()
                     ->color('gray'),
 
@@ -183,7 +185,7 @@ class PatientResource extends Resource
             ->searchPlaceholder('Buscar por nombre, apellido, email o Teléfono...')
             ->emptyStateHeading('No hay pacientes registrados')
             ->emptyStateDescription('Crea un nuevo paciente para comenzar.')
-            ->emptyStateIcon('heroicon-o-user-group');
+            ->emptyStateIcon(LucideIcon::Users);
     }
 
     public static function infolist(Schema $schema): Schema
