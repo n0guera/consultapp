@@ -20,8 +20,6 @@ class AppointmentForm
                 Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
-                Toggle::make('send_reminder')
-                    ->required(),
                 TextInput::make('reason'),
                 DateTimePicker::make('start_date')
                     ->required(),

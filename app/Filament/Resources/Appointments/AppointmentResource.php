@@ -115,11 +115,6 @@ class AppointmentResource extends Resource
                             ->default(fn() => Auth::id())
                             ->required(),
 
-                        Toggle::make('send_reminder')
-                            ->label('Enviar recordatorio')
-                            ->default(true)
-                            ->onColor('success'),
-
                         Textarea::make('cancellation_reason')
                             ->label('Motivo Cancelación')
                             ->placeholder('Solo si se cancela...')
