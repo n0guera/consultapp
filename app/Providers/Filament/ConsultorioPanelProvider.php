@@ -21,7 +21,7 @@ use Illuminate\Support\HtmlString;
 
 class ConsultorioPanelProvider extends PanelProvider
 {
-    
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -29,12 +29,12 @@ class ConsultorioPanelProvider extends PanelProvider
             ->id('consultorio')
             ->path('consultorio')
             ->login()
-            ->favicon(asset('images/logo.png'))
+            ->favicon(secure_asset('images/logo.png'))
             ->brandName('ConsultApp')
             ->brandLogo(fn() => new HtmlString('
             <div style="display: flex; align-items: center; gap: 15px;">
                 <img 
-                    src="' . asset('images/logo.png') . '" 
+                    src="' . secure_asset('images/logo.png') . '" 
                     alt="Logo ConsultApp" 
                     style="height: 40px; width: auto;" 
                 />
@@ -56,13 +56,12 @@ class ConsultorioPanelProvider extends PanelProvider
             )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
-            
+
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
-            ])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
